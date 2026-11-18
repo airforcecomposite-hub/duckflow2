@@ -1,0 +1,24 @@
+{
+  "Name": "DuckFlow 2",
+  "Version": "2.0.0",
+  "Factory Info": {
+    "Vendor": "DuckFlow Audio",
+    "URL": "https://github.com/duckflow-audio/duckflow2",
+    "E-Mail": "support@duckflow.audio",
+    "Flags": { "Unicode": true, "Classes Discardable": false, "Component Non Discardable": false }
+  },
+  "Classes": [
+    {
+      "CID": "446B46325653543391A2B3C455667788",
+      "Category": "Audio Module Class",
+      "Name": "DuckFlow 2",
+      "Vendor": "DuckFlow Audio",
+      "Version": "2.0.0",
+      "SDKVersion": "VST 3.7.9",
+      "Sub Categories": ["Fx", "Dynamics", "Modulation"],
+      "Class Flags": 0,
+      "Cardinality": 2147483647,
+      "Snapshots": []
+    }
+  ]
+}

@@ -1,0 +1,65 @@
+name: Build DuckFlow 2 VST3 (Windows / macOS / Linux)
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  build-windows:
+    name: Windows x64 VST3
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Configure CMake
+        run: cmake -B build -DCMAKE_BUILD_TYPE=Release
+      - name: Build VST3 & Standalone
+        run: cmake --build build --config Release --parallel
+      - name: Upload Windows VST3 Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: DuckFlow2-Windows-x64-VST3
+          path: build/DuckFlow2_artefacts/Release/VST3/DuckFlow 2.vst3
+
+  build-macos:
+    name: macOS Universal VST3 & AU
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Configure Universal Binary (arm64 + x86_64)
+        run: cmake -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_OSX_ARCHITECTURES="arm64;x86_64" -DCMAKE_OSX_DEPLOYMENT_TARGET="10.15"
+      - name: Build VST3 & AU
+        run: cmake --build build --config Release --parallel
+      - name: Ad-hoc Codesign Bundles
+        run: |
+          codesign --force --deep --sign - "build/DuckFlow2_artefacts/Release/VST3/DuckFlow 2.vst3"
+          codesign --force --deep --sign - "build/DuckFlow2_artefacts/Release/AU/DuckFlow 2.component"
+      - name: Upload macOS Universal VST3 & AU Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: DuckFlow2-macOS-Universal-VST3-AU
+          path: |
+            build/DuckFlow2_artefacts/Release/VST3/DuckFlow 2.vst3
+            build/DuckFlow2_artefacts/Release/AU/DuckFlow 2.component
+
+  build-linux:
+    name: Linux x64 VST3
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Linux JUCE Dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libasound2-dev libfreetype6-dev libx11-dev libxcomposite-dev \
+            libxcursor-dev libxext-dev libxinerama-dev libxrandr-dev libxrender-dev \
+            libwebkit2gtk-4.1-dev libglu1-mesa-dev mesa-common-dev libcurl4-openssl-dev
+      - name: Configure & Build
+        run: |
+          cmake -B build -DCMAKE_BUILD_TYPE=Release
+          cmake --build build --config Release --parallel
+      - name: Upload Linux VST3 Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: DuckFlow2-Linux-x64-VST3
+          path: build/DuckFlow2_artefacts/Release/VST3/DuckFlow 2.vst3
